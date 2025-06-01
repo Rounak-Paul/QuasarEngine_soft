@@ -14,6 +14,7 @@ add_subdirectory(vendor/SDL)
 target_include_directories(QuasarSoft PRIVATE 
     src
     vendor/SDL/include
+    vendor/TINYOBJLOADER
 )
 
 target_link_libraries(QuasarSoft PRIVATE 

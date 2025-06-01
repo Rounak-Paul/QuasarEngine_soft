@@ -3,7 +3,6 @@
 #include <SDL3/SDL.h>
 #include <array>
 #include <vector>
-#include "Vertex.h"
 
 #define WIDTH 800
 #define HEIGHT 600
