@@ -21,7 +21,7 @@ Model::Model(const std::string& filename) {
     }
 
     for (size_t i = 0; i < attrib.vertices.size(); i += 3)
-        verts_.emplace_back(attrib.vertices[i], attrib.vertices[i + 1], attrib.vertices[i + 2]);
+        verts_.emplace_back(attrib.vertices[i]/10, attrib.vertices[i + 1]/10, attrib.vertices[i + 2]/10);
 
     for (size_t i = 0; i < attrib.normals.size(); i += 3)
         normals_.emplace_back(attrib.normals[i], attrib.normals[i + 1], attrib.normals[i + 2]);

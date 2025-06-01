@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Geometry.h" // Your Vec3f and Vec2f
+#include <Math/Geometry.h>
 
 class Model {
 public:

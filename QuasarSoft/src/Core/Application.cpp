@@ -15,10 +15,20 @@ bool Application::init() {
     return true;
 }
 
+// TODO: move to math library
+uint32_t intensity_to_color(float intensity) {
+    if (intensity < 0) intensity = 0;
+    if (intensity > 1) intensity = 1;
+    
+    uint8_t color_value = static_cast<uint8_t>(intensity * 255);
+    return 0xFF000000 | (color_value << 16) | (color_value << 8) | color_value; // ARGB format
+}
+
 void Application::run() {
     SDL_Event event;
-
     Model model = Model("../Assets/teapot.obj");
+    Vec3f light_dir(0, 0, -1); // Light direction vector
+    light_dir.normalize();
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -26,25 +36,43 @@ void Application::run() {
                 running = false;
             }
         }
-
+        
         int pitch;
         if (!renderer.begin_frame(pitch)) continue;
-
-        for (int i=0; i<model.nfaces(); i++) { 
-            std::vector<int> face = model.face(i); 
-            for (int j=0; j<3; j++) { 
-                Vec3f v0 = model.vert(face[j]); 
-                Vec3f v1 = model.vert(face[(j+1)%3]); 
-                int x0 = (v0.x+1.)*WIDTH/2.; 
-                int y0 = (v0.y+1.)*HEIGHT/2.; 
-                int x1 = (v1.x+1.)*WIDTH/2.; 
-                int y1 = (v1.y+1.)*HEIGHT/2.; 
-                renderer.draw_line(x0, y0, x1, y1, 0xFFFF0000); 
-            } 
+        
+        // Clear the framebuffer (optional - black background)
+        // You might want to add a clear function to your renderer
+        
+        // Render all faces of the model
+        for (int i = 0; i < model.nfaces(); i++) {
+            std::vector<int> face = model.face(i);
+            Vec2i screen_coords[3];
+            Vec3f world_coords[3];
+            
+            // Transform vertices from world space to screen space
+            for (int j = 0; j < 3; j++) {
+                Vec3f v = model.vert(face[j]);
+                screen_coords[j] = Vec2i((v.x + 1.) * WIDTH / 2., (v.y + 1.) * HEIGHT / 2.);
+                world_coords[j] = v;
+            }
+            
+            // Calculate face normal using cross product
+            Vec3f n = (world_coords[2] - world_coords[0]) ^ (world_coords[1] - world_coords[0]);
+            n.normalize();
+            
+            // Calculate lighting intensity using dot product
+            float intensity = n * light_dir;
+            
+            // Only render faces facing towards the light (back-face culling)
+            if (intensity > 0) {
+                uint32_t color = intensity_to_color(intensity);
+                renderer.draw_triangle(screen_coords[0], screen_coords[1], screen_coords[2], color);
+            }
         }
-
+        
         renderer.end_frame();
-
+        
+        // FPS counter
         frameCount++;
         uint32_t now = SDL_GetTicks();
         if (now - lastTime >= 1000) {
@@ -54,7 +82,7 @@ void Application::run() {
             frameCount = 0;
             lastTime = now;
         }
-
+        
         SDL_Delay(1);
     }
 }

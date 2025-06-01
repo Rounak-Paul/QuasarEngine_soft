@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <array>
 #include <vector>
+#include <Math/Geometry.h>
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -19,8 +20,8 @@ public:
     void* begin_frame(int& pitch);
     void end_frame();
 
-    // New line drawing method
     void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
+    void draw_triangle(Vec2i t0, Vec2i t1, Vec2i t2, uint32_t color);
 
     SDL_Window* get_window() const { return window; }
 
