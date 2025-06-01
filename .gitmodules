@@ -1,3 +1,6 @@
 [submodule "QuasarSoft/vendor/SDL"]
 	path = QuasarSoft/vendor/SDL
 	url = https://github.com/Rounak-Paul/SDL.git
+[submodule "QuasarSoft/vendor/TINYOBJLOADER"]
+	path = QuasarSoft/vendor/TINYOBJLOADER
+	url = https://github.com/tinyobjloader/tinyobjloader.git

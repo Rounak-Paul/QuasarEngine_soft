@@ -17,16 +17,20 @@ public:
     bool init();
     void shutdown();
 
-    void drawMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+    void* begin_frame(int& pitch);
+    void end_frame();
 
-    SDL_Window* getWindow() const { return window; };
+    // New line drawing method
+    void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
+
+    SDL_Window* get_window() const { return window; }
 
 private:
     SDL_Window* window = nullptr;
     SDL_Renderer* sdlRenderer = nullptr;
     std::array<SDL_Texture*, FRAMEBUFFERS> textures{};
     int currentBuffer = 0;
-    
-    void* lockCurrent(int& pitch);
-    void unlockAndPresent();
+
+    uint32_t* framebuffer = nullptr;
+    int framebufferPitch = 0; // in pixels
 };

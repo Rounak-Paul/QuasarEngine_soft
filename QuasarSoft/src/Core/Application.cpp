@@ -17,14 +17,6 @@ bool Application::init() {
 void Application::run() {
     SDL_Event event;
 
-    std::vector<Vertex> vertices = {
-        {400, 100, 0xFFFF0000}, // red
-        {600, 500, 0xFF00FF00}, // green
-        {200, 500, 0xFF0000FF}, // blue
-    };
-
-    std::vector<uint32_t> indices = {0, 1, 2};
-
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) {
@@ -32,14 +24,21 @@ void Application::run() {
             }
         }
 
-        renderer.drawMesh(vertices, indices);
+        int pitch;
+        if (!renderer.begin_frame(pitch)) continue;
+
+        renderer.draw_line(13, 20, 80, 40, 0xFFFF0000);  // white
+        renderer.draw_line(20, 13, 40, 80, 0xFFFF0000);  // red
+        renderer.draw_line(80, 40, 13, 20, 0xFFFF0000);  // red
+
+        renderer.end_frame();
 
         frameCount++;
         uint32_t now = SDL_GetTicks();
         if (now - lastTime >= 1000) {
             char title[128];
             snprintf(title, sizeof(title), "QuasarSoft - FPS: %d", frameCount);
-            SDL_SetWindowTitle(renderer.getWindow(), title);
+            SDL_SetWindowTitle(renderer.get_window(), title);
             frameCount = 0;
             lastTime = now;
         }
