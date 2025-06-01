@@ -9,7 +9,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 
 add_executable(QuasarSoft ${SOURCES})
 
-add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/SDL)
 
 target_include_directories(QuasarSoft PRIVATE 
     src
