@@ -37,11 +37,7 @@ void Application::run() {
             }
         }
         
-        int pitch;
-        if (!renderer.begin_frame(pitch)) continue;
-        
-        // Clear the framebuffer (optional - black background)
-        // You might want to add a clear function to your renderer
+        if (!renderer.begin_frame()) continue;
         
         // Render all faces of the model
         for (int i = 0; i < model.nfaces(); i++) {

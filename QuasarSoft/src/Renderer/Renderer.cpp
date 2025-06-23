@@ -16,11 +16,11 @@ bool Renderer::init() {
     window = SDL_CreateWindow("QuasarSoft", WIDTH, HEIGHT, SDL_WINDOW_RESIZABLE);
     if (!window) return false;
 
-    sdlRenderer = SDL_CreateRenderer(window, nullptr);
-    if (!sdlRenderer) return false;
+    sdl_renderer = SDL_CreateRenderer(window, nullptr);
+    if (!sdl_renderer) return false;
 
     for (int i = 0; i < FRAMEBUFFERS; ++i) {
-        textures[i] = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+        textures[i] = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
         if (!textures[i]) return false;
     }
 
@@ -31,21 +31,21 @@ void Renderer::shutdown() {
     for (SDL_Texture* tex : textures) {
         if (tex) SDL_DestroyTexture(tex);
     }
-    if (sdlRenderer) SDL_DestroyRenderer(sdlRenderer);
+    if (sdl_renderer) SDL_DestroyRenderer(sdl_renderer);
     if (window) SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
-void* Renderer::begin_frame(int& pitch) {
+void* Renderer::begin_frame() {
     if (framebuffer) return framebuffer; // Already locked
     void* pixels = nullptr;
+    int pitch;
     if (!SDL_LockTexture(textures[currentBuffer], nullptr, &pixels, &pitch)) {
         std::cerr << "SDL_LockTexture failed: " << SDL_GetError() << "\n";
         return nullptr;
     }
     framebuffer = static_cast<uint32_t*>(pixels);
-    framebufferPitch = pitch / sizeof(uint32_t); // convert to pixels
-    pitch = framebufferPitch;
+    framebuffer_pitch = pitch / sizeof(uint32_t); // convert to pixels
     return framebuffer;
 }
 
@@ -54,9 +54,9 @@ void Renderer::end_frame() {
         SDL_UnlockTexture(textures[currentBuffer]);
         framebuffer = nullptr;
     }
-    SDL_RenderClear(sdlRenderer);
-    SDL_RenderTextureRotated(sdlRenderer, textures[currentBuffer], nullptr, nullptr, 0.0, nullptr, SDL_FLIP_VERTICAL);
-    SDL_RenderPresent(sdlRenderer);
+    SDL_RenderClear(sdl_renderer);
+    SDL_RenderTextureRotated(sdl_renderer, textures[currentBuffer], nullptr, nullptr, 0.0, nullptr, SDL_FLIP_VERTICAL);
+    SDL_RenderPresent(sdl_renderer);
     currentBuffer = (currentBuffer + 1) % FRAMEBUFFERS;
 }
 
@@ -88,10 +88,10 @@ void Renderer::draw_line(int x0, int y0, int x1, int y1, uint32_t color) {
         if (steep) {
             // Coordinates were swapped: draw at (y, x)
             if (y >= 0 && y < WIDTH && x >= 0 && x < HEIGHT)
-                framebuffer[x * framebufferPitch + y] = color;
+                framebuffer[x * framebuffer_pitch + y] = color;
         } else {
             if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
-                framebuffer[y * framebufferPitch + x] = color;
+                framebuffer[y * framebuffer_pitch + x] = color;
         }
 
         error2 += derror2;
@@ -143,7 +143,7 @@ void Renderer::draw_triangle(Vec2i t0, Vec2i t1, Vec2i t2, uint32_t color) {
         for (int j = A.x; j <= B.x; j++) {
             // Bounds checking for x coordinate
             if (j >= 0 && j < WIDTH) {
-                framebuffer[y * framebufferPitch + j] = color;
+                framebuffer[y * framebuffer_pitch + j] = color;
             }
         }
     }

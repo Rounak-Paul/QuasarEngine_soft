@@ -7,7 +7,7 @@
 
 #define WIDTH 800
 #define HEIGHT 600
-#define FRAMEBUFFERS 2
+#define FRAMEBUFFERS 3
 
 class Renderer {
 public:
@@ -17,7 +17,7 @@ public:
     bool init();
     void shutdown();
 
-    void* begin_frame(int& pitch);
+    void* begin_frame();
     void end_frame();
 
     void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
@@ -27,10 +27,10 @@ public:
 
 private:
     SDL_Window* window = nullptr;
-    SDL_Renderer* sdlRenderer = nullptr;
+    SDL_Renderer* sdl_renderer = nullptr;
     std::array<SDL_Texture*, FRAMEBUFFERS> textures{};
     int currentBuffer = 0;
 
     uint32_t* framebuffer = nullptr;
-    int framebufferPitch = 0; // in pixels
+    int framebuffer_pitch = 0; // in pixels
 };
